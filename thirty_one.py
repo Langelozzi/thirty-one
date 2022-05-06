@@ -30,18 +30,19 @@ def calculate_hand_total(hand) -> int:
     else:
         return max([card.value for card in hand])
 
-# work in progress
-def determine_worst_card(hand: list):
-    suits_in_hand = [card.suit for card in hand]
+def determine_worst_card(hand: TO_Hand) -> int:
+    suits_in_hand = [card.suit for card in hand.hand]
     
     counter = Counter(suits_in_hand)
     same_suit = [key for key in counter.keys() if counter[key] > 1]
     
     try:
-        non_same_cards = [card.value for card in hand if card.suit != same_suit[0]]
-        return min(non_same_cards)
+        # returning the card object that has the lowest value of all the cards with unique suits
+        non_same_card_values = [card.value for card in hand.hand if card.suit != same_suit[0]]
+        return [card for card in hand.hand if card.value == min(non_same_card_values)][0]
     except:
-        return min([card.value for card in hand])
+        # returning the card object that has the lowest value of all the cards
+        return [card for card in hand.hand if card.value == min([card.value for card in hand.hand])][0]
 
 # work in progress
 def comp_turn(deck: list, hand: TO_Hand, disc_pile: list, disc_card: Card, deck_card: Card):
