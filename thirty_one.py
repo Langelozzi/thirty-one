@@ -16,7 +16,7 @@ def create_deck() -> list:
 
     return deck.cards
 
-def calculate_hand_total(hand) -> int:
+def calculate_hand_total(hand: list) -> int:
     suits_in_hand = [card.suit for card in hand]
     
     counter = Counter(suits_in_hand)
@@ -45,15 +45,25 @@ def determine_worst_card(hand: TO_Hand) -> int:
         return [card for card in hand.hand if card.value == min([card.value for card in hand.hand])][0]
 
 # work in progress
-def comp_turn(deck: list, hand: TO_Hand, disc_pile: list, disc_card: Card, deck_card: Card):
-    hand_w_disc = hand.hand.copy().append(disc_card)
+def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_card: Card):
+    hand_w_disc = hand.hand.copy()
+    hand_w_disc.append(disc_card)
 
     if calculate_hand_total(hand_w_disc) > hand.calculate_hand_total():
         hand.add_card(disc_card)
         disc_pile.remove(disc_card)
+
+        worst_card = determine_worst_card(hand)
+        hand.remove_card(worst_card)
+        disc_pile.append(worst_card)
     else:
         hand.add_card(deck_card)
+        # BUGGGG
         deck.remove(deck_card)
+
+        worst_card = determine_worst_card(hand)
+        hand.remove_card(worst_card)
+        disc_pile.append(worst_card)
 
 def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, deck: list, top_deck_card: Card, k: bool):
     print(f"<---------- Your Cards ---------->")
@@ -107,10 +117,11 @@ def main() -> None:
         if knocked:
             knock -= 1
 
-        top_deck_card = deck[0::-1][0]
+        top_deck_card = deck[::-1][0]
         discard_card = discard_pile[::-1][0]
         
         knocked = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
+        comp_turn(comp1_hand, discard_card, discard_pile, deck, top_deck_card)
         
 
 if __name__ == "__main__":
