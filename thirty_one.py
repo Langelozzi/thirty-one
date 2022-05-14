@@ -121,6 +121,9 @@ def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, de
     print(f"Current Hand Value: {player_hand.calculate_hand_total()}\n")
 
     discard_option = int(input("Which card would you like to discard of?: "))
+    while type(discard_option) is not int or discard_option not in (1,2,3,4):
+        discard_option = int(input("Must choose a number between 1-4 when discarding a card. Pick again: "))
+
     discard_card = player_hand.remove_card(player_hand.hand[discard_option-1])
     discard_pile.append(discard_card)
     
@@ -181,7 +184,7 @@ def main() -> None:
     knock = 1
     p_knocked, c1_knocked, c2_knocked, c3_knocked = [False, False, False, False]
     
-    while knock > 0:
+    while knock > 0 and len(deck) > 0:
         if p_knocked or c1_knocked or c2_knocked or c3_knocked:
             knock -= 1
         
