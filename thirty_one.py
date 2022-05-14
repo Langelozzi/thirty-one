@@ -30,22 +30,24 @@ def calculate_hand_total(hand: list) -> int:
     else:
         return max([card.value for card in hand])
 
-def determine_worst_card(hand: TO_Hand) -> int:
-    suits_in_hand = [card.suit for card in hand.hand]
+def determine_worst_card(hand: list) -> Card:
+    suits_in_hand = [card.suit for card in hand]
     
     counter = Counter(suits_in_hand)
     same_suit = [key for key in counter.keys() if counter[key] > 1]
     
     try:
         # returning the card object that has the lowest value of all the cards with unique suits
-        non_same_card_values = [card.value for card in hand.hand if card.suit != same_suit[0]]
-        return [card for card in hand.hand if card.value == min(non_same_card_values)][0]
+        non_same_card_values = [card.value for card in hand if card.suit != same_suit[0]]
+        return [card for card in hand if card.value == min(non_same_card_values)][0]
     except:
         # returning the card object that has the lowest value of all the cards
-        return [card for card in hand.hand if card.value == min([card.value for card in hand.hand])][0]
+        return [card for card in hand if card.value == min([card.value for card in hand])][0]
 
 # work in progress
 def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_card: Card):
+    print("\nComputer 1 is taking their turn...\n")
+
     hand_w_disc = hand.hand.copy()
     hand_w_disc.append(disc_card)
     disc_pile.remove(disc_card)
@@ -54,7 +56,7 @@ def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_
         hand = hand_w_disc
 
         worst_card = determine_worst_card(hand)
-        hand.remove_card(worst_card)
+        hand.remove(worst_card)
         disc_pile.append(worst_card)
     else:
         hand.add_card(deck_card)
@@ -63,7 +65,7 @@ def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_
         if deck_card in deck:
             deck.remove(deck_card)
 
-        worst_card = determine_worst_card(hand)
+        worst_card = determine_worst_card(hand.hand)
         hand.remove_card(worst_card)
         disc_pile.append(worst_card)
 
@@ -90,20 +92,22 @@ def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, de
         player_hand.add_card(top_deck_card)
         deck.remove(top_deck_card)
 
-    print(f"<---------- Your Cards ---------->")
+    print(f"\n<---------- Your Cards ---------->")
     player_hand.print_hand()
     print(f"Current Hand Value: {player_hand.calculate_hand_total()}\n")
 
     discard_option = int(input("Which card would you like to discard of?: "))
-    chosen_card = player_hand.remove_card(player_hand.hand[discard_option-1])
-    discard_pile.append(chosen_card)   
+    discard_card = player_hand.remove_card(player_hand.hand[discard_option-1])
+    discard_pile.append(discard_card)
     
     if not k:
         knocked = input("\nWould you like to knock?: ")
         if knocked.lower() in ("yes", "y", "ye", "yea", "yeah"):
-            return True
+            return True, player_hand, discard_card, discard_pile, deck, top_deck_card
         elif knocked.lower() in ("no", "n", "nah"):
-            return False
+            return False, player_hand, discard_card, discard_pile, deck, top_deck_card
+
+    return False, player_hand, discard_card, discard_pile, deck, top_deck_card
 
 
 def main() -> None:
@@ -124,7 +128,7 @@ def main() -> None:
         top_deck_card = deck[::-1][0]
         discard_card = discard_pile[::-1][0]
         
-        knocked = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
+        knocked, player_hand, discard_card, discard_pile, deck, top_deck_card = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
         comp_turn(comp1_hand, discard_card, discard_pile, deck, top_deck_card)
         
 
