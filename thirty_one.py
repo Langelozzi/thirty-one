@@ -18,22 +18,19 @@ def create_deck() -> list:
 
     return deck.cards
 
-# BUGG: if 2 are spade and 2 are diamond then it added all the points up instead of just the one with the highest value
 def calculate_hand_total(hand: list) -> int:
     suits_in_hand = [card.suit for card in hand]
     
     counter = Counter(suits_in_hand)
     same_suit = [key for key in counter.keys() if counter[key] > 1]
-    
-    hand_value = [card.value for card in hand if card.suit in same_suit]
-    total = sum(hand_value)
-
-    if total > 0:
+    try:
+        hand_value = [card.value for card in hand if card.suit == same_suit[0]]
+        total = sum(hand_value)
         return total
-    else:
+    except IndexError:
         return max([card.value for card in hand])
 
-# Needs fixing. Not finding the worst card in a hand
+
 def determine_worst_card(hand: list) -> Card:
     suits_in_hand = [card.suit for card in hand]
     
@@ -169,6 +166,8 @@ def determine_winner(p_hand: TO_Hand, c1_hand: TO_Hand, c2_hand: TO_Hand, c3_han
 
 
 def main() -> None:
+    # BUGG: Got a discard card that was the same card as the one in my hand
+    
     clear_console()
     deck = create_deck()
     player_hand = TO_Hand(deck)
@@ -185,17 +184,25 @@ def main() -> None:
     p_knocked, c1_knocked, c2_knocked, c3_knocked = [False, False, False, False]
     
     while knock > 0 and len(deck) > 0:
-        if p_knocked or c1_knocked or c2_knocked or c3_knocked:
-            knock -= 1
-        
         top_deck_card = deck[::-1][0]
         
+        if p_knocked or c1_knocked or c2_knocked or c3_knocked:
+            knock -= 1
         p_knocked, discard_card, discard_pile, deck, top_deck_card = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
+        
+        if p_knocked or c1_knocked or c2_knocked or c3_knocked:
+            knock -= 1
         c1_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(1, comp1_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
+        
+        if p_knocked or c1_knocked or c2_knocked or c3_knocked:
+            knock -= 1
         c2_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(2, comp2_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
+        
+        if p_knocked or c1_knocked or c2_knocked or c3_knocked:
+            knock -= 1
         c3_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(3, comp3_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
 
