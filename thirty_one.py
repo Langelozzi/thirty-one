@@ -22,8 +22,10 @@ def calculate_hand_total(hand: list) -> int:
     suits_in_hand = [card.suit for card in hand]
     
     counter = Counter(suits_in_hand)
+    # when there was more than one suit in here then it would add all the cards from both suits so i had to make it that it only uses the first suit in the list
     same_suit = [key for key in counter.keys() if counter[key] > 1]
-    try:
+    
+    try:                                                            # first suit only [0]
         hand_value = [card.value for card in hand if card.suit == same_suit[0]]
         total = sum(hand_value)
         return total
