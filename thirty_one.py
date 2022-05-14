@@ -141,6 +141,30 @@ def clear_console():
     else:
         os.system('clear')
 
+def determine_winner(p_hand: TO_Hand, c1_hand: TO_Hand, c2_hand: TO_Hand, c3_hand: TO_Hand):
+    p1_total = p_hand.calculate_hand_total()
+    c1_total = c1_hand.calculate_hand_total()
+    c2_total = c2_hand.calculate_hand_total()
+    c3_total = c3_hand.calculate_hand_total()
+
+    highest_score = max(p1_total, c1_total, c2_total, c3_total)
+    
+    print("<---------- Final Scores ---------->")
+    print(f"Your Final Score: {p1_total}")
+    print(f"Computer 1 Score: {c1_total}")
+    print(f"Computer 2 Score: {c2_total}")
+    print(f"Computer 3 Score: {c3_total}")
+
+    if p1_total == highest_score:
+        print("\nYou Win!")
+    elif c1_total == highest_score:
+        print("\nComputer 1 Wins.")
+    elif c2_total == highest_score:
+        print("\nComputer 2 Wins.")
+    elif c2_total == highest_score:
+        print("\nComputer 3 Wins.")
+
+
 def main() -> None:
     clear_console()
     deck = create_deck()
@@ -172,6 +196,7 @@ def main() -> None:
         c3_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(3, comp3_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
 
+    determine_winner(player_hand, comp1_hand, comp2_hand, comp3_hand)
     
         
 
