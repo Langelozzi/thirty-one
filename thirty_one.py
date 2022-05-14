@@ -48,22 +48,26 @@ def determine_worst_card(hand: TO_Hand) -> int:
 def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_card: Card):
     hand_w_disc = hand.hand.copy()
     hand_w_disc.append(disc_card)
+    disc_pile.remove(disc_card)
 
     if calculate_hand_total(hand_w_disc) > hand.calculate_hand_total():
-        hand.add_card(disc_card)
-        disc_pile.remove(disc_card)
+        hand = hand_w_disc
 
         worst_card = determine_worst_card(hand)
         hand.remove_card(worst_card)
         disc_pile.append(worst_card)
     else:
         hand.add_card(deck_card)
+        
         # BUGGGG
-        deck.remove(deck_card)
+        if deck_card in deck:
+            deck.remove(deck_card)
 
         worst_card = determine_worst_card(hand)
         hand.remove_card(worst_card)
         disc_pile.append(worst_card)
+
+        return hand
 
 def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, deck: list, top_deck_card: Card, k: bool):
     print(f"<---------- Your Cards ---------->")
