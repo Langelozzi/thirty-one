@@ -45,7 +45,7 @@ def determine_worst_card(hand: list) -> Card:
         return [card for card in hand if card.value == min([card.value for card in hand])][0]
 
 # work in progress
-def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_card: Card):
+def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_card: Card, k: bool) -> bool:
     print("\nComputer 1 is taking their turn...\n")
 
     hand_w_disc = hand.hand.copy()
@@ -61,7 +61,6 @@ def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_
     else:
         hand.add_card(deck_card)
         
-        # BUGGGG
         if deck_card in deck:
             deck.remove(deck_card)
 
@@ -69,7 +68,15 @@ def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_
         hand.remove_card(worst_card)
         disc_pile.append(worst_card)
 
-        return hand
+        hand = hand.hand
+
+    if not k:
+        hand_total = calculate_hand_total(hand)
+        if hand_total > 26:
+            print("Computer 1 has knocked, you have one turn left")
+            return True
+        else:
+            return False
 
 def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, deck: list, top_deck_card: Card, k: bool):
     print(f"<---------- Your Cards ---------->")
@@ -103,11 +110,11 @@ def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, de
     if not k:
         knocked = input("\nWould you like to knock?: ")
         if knocked.lower() in ("yes", "y", "ye", "yea", "yeah"):
-            return True
+            return True, discard_card, discard_pile, deck, top_deck_card
         elif knocked.lower() in ("no", "n", "nah"):
-            return False
+            return False, discard_card, discard_pile, deck, top_deck_card
 
-    return False
+    return False, discard_card, discard_pile, deck, top_deck_card
 
 
 def main() -> None:
@@ -128,8 +135,8 @@ def main() -> None:
         top_deck_card = deck[::-1][0]
         discard_card = discard_pile[::-1][0]
         
-        knocked = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
-        comp_turn(comp1_hand, discard_card, discard_pile, deck, top_deck_card)
+        knocked, discard_card, discard_pile, deck, top_deck_card = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
+        knocked = comp_turn(comp1_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
         
 
 if __name__ == "__main__":
