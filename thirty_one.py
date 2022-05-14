@@ -70,10 +70,10 @@ def comp_turn(hand: TO_Hand, disc_card: Card, disc_pile: list, deck: list, deck_
 
         hand = hand.hand
 
-    if not k:
+    if not k or k == False:
         hand_total = calculate_hand_total(hand)
-        if hand_total > 26:
-            print("Computer 1 has knocked, you have one turn left")
+        if hand_total > 10:
+            print("Computer 1 has knocked, you have one turn left\n")
             return True
         else:
             return False
@@ -107,7 +107,7 @@ def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, de
     discard_card = player_hand.remove_card(player_hand.hand[discard_option-1])
     discard_pile.append(discard_card)
     
-    if not k:
+    if not k or k == False:
         knocked = input("\nWould you like to knock?: ")
         if knocked.lower() in ("yes", "y", "ye", "yea", "yeah"):
             return True, discard_card, discard_pile, deck, top_deck_card
