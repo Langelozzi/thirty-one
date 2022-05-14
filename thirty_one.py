@@ -103,11 +103,11 @@ def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, de
     if not k:
         knocked = input("\nWould you like to knock?: ")
         if knocked.lower() in ("yes", "y", "ye", "yea", "yeah"):
-            return True, player_hand, discard_card, discard_pile, deck, top_deck_card
+            return True
         elif knocked.lower() in ("no", "n", "nah"):
-            return False, player_hand, discard_card, discard_pile, deck, top_deck_card
+            return False
 
-    return False, player_hand, discard_card, discard_pile, deck, top_deck_card
+    return False
 
 
 def main() -> None:
@@ -128,7 +128,7 @@ def main() -> None:
         top_deck_card = deck[::-1][0]
         discard_card = discard_pile[::-1][0]
         
-        knocked, player_hand, discard_card, discard_pile, deck, top_deck_card = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
+        knocked = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knocked)
         comp_turn(comp1_hand, discard_card, discard_pile, deck, top_deck_card)
         
 
