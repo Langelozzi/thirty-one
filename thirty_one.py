@@ -18,6 +18,7 @@ def create_deck() -> list:
 
     return deck.cards
 
+# BUGG: if 2 are spade and 2 are diamond then it added all the points up instead of just the one with the highest value
 def calculate_hand_total(hand: list) -> int:
     suits_in_hand = [card.suit for card in hand]
     
@@ -32,7 +33,7 @@ def calculate_hand_total(hand: list) -> int:
     else:
         return max([card.value for card in hand])
 
-
+# Needs fixing. Not finding the worst card in a hand
 def determine_worst_card(hand: list) -> Card:
     suits_in_hand = [card.suit for card in hand]
     
@@ -63,9 +64,9 @@ def comp_turn(numb: int, hand: TO_Hand, disc_card: Card, disc_pile: list, deck: 
         time.sleep(1)
         hand = hand_w_disc
 
-        worst_card = determine_worst_card(hand)
-        hand.remove(worst_card)
-        disc_pile.append(worst_card)
+        disc_card = determine_worst_card(hand)
+        hand.remove(disc_card)
+        disc_pile.append(disc_card)
     
     else:
         print(f"Computer {numb} drew from the deck")
@@ -77,20 +78,22 @@ def comp_turn(numb: int, hand: TO_Hand, disc_card: Card, disc_pile: list, deck: 
         if deck_card in deck:
             deck.remove(deck_card)
 
-        worst_card = determine_worst_card(hand.hand)
-        hand.remove_card(worst_card)
-        disc_pile.append(worst_card)
+        disc_card = determine_worst_card(hand.hand)
+        hand.remove_card(disc_card)
+        disc_pile.append(disc_card)
 
         hand = hand.hand
 
     if k == 1:
         hand_total = calculate_hand_total(hand)
-        if hand_total > 10:
+        if hand_total > 26:
             print(f"Computer {numb} has knocked, you have one turn left\n")
             time.sleep(3)
-            return True
+            return True, disc_card, disc_pile, deck, deck_card
         else:
-            return False
+            return False, disc_card, disc_pile, deck, deck_card
+
+    return False, disc_card, disc_pile, deck, deck_card
 
 def player_turn(player_hand: TO_Hand, discard_card: Card, discard_pile: list, deck: list, top_deck_card: Card, k: int):
     print(f"<---------- Your Cards ---------->")
@@ -143,24 +146,30 @@ def main() -> None:
     deck = create_deck()
     player_hand = TO_Hand(deck)
     comp1_hand = TO_Hand(deck)
+    comp2_hand = TO_Hand(deck)
+    comp3_hand = TO_Hand(deck)
     discard_pile = []
     discard_pile.append(deck[0::-1][0])
     deck.remove(deck[0::-1][0])
 
+    discard_card = discard_pile[::-1][0]
+
     knock = 1
-    knocked = False
+    p_knocked, c1_knocked, c2_knocked, c3_knocked = [False, False, False, False]
     
     while knock > 0:
-        if knocked:
+        if p_knocked or c1_knocked or c2_knocked or c3_knocked:
             knock -= 1
-
-        top_deck_card = deck[::-1][0]
-        discard_card = discard_pile[::-1][0]
         
-        knocked, discard_card, discard_pile, deck, top_deck_card = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knock)
+        top_deck_card = deck[::-1][0]
+        
+        p_knocked, discard_card, discard_pile, deck, top_deck_card = player_turn(player_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
-        knocked = comp_turn(1, comp1_hand, discard_card, discard_pile, deck, top_deck_card, knock)
-        # time.sleep(2)
+        c1_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(1, comp1_hand, discard_card, discard_pile, deck, top_deck_card, knock)
+        clear_console()
+        c2_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(2, comp2_hand, discard_card, discard_pile, deck, top_deck_card, knock)
+        clear_console()
+        c3_knocked, discard_card, discard_pile, deck, top_deck_card = comp_turn(3, comp3_hand, discard_card, discard_pile, deck, top_deck_card, knock)
         clear_console()
 
     
